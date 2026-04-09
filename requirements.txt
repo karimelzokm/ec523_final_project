@@ -1,0 +1,19 @@
+# Core deep learning  (torchvision NOT needed; omitting avoids version conflicts)
+torch==2.5.1
+
+# HuggingFace ecosystem
+transformers==4.46.3
+peft==0.13.2
+trl==0.13.2            # 0.13.x = first version with GRPOTrainer, no FSDPModule issue
+accelerate==0.34.2
+datasets==3.2.0
+tokenizers==0.20.0
+
+# 4-bit quantisation
+bitsandbytes==0.45.0
+
+# Data / numerics
+numpy>=1.24.0
+scipy>=1.11.0
+pyarrow>=14.0.0
+tqdm>=4.66.0

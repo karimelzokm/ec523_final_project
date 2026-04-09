@@ -1,0 +1,5 @@
+{
+  "reward_type": "format_bonus",
+  "format_bonus_value": 0.1,
+  "length_penalty_lambda": 0.001
+}

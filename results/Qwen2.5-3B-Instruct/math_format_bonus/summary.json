@@ -1,0 +1,41 @@
+{
+  "base": {
+    "phase": "base",
+    "dataset": "math",
+    "accuracy": 0.1484,
+    "pass_at_k": 0.244,
+    "k": 4,
+    "format_success": 0.2106,
+    "avg_output_length": 145.9278,
+    "correct": 742,
+    "total": 5000,
+    "reward_type": "format_bonus",
+    "avg_reward": 0.16946000000000327
+  },
+  "sft": {
+    "phase": "sft",
+    "dataset": "math",
+    "accuracy": 0.2752,
+    "pass_at_k": 0.4132,
+    "k": 4,
+    "format_success": 0.754,
+    "avg_output_length": 103.6488,
+    "correct": 1376,
+    "total": 5000,
+    "reward_type": "format_bonus",
+    "avg_reward": 0.3505999999999804
+  },
+  "grpo": {
+    "phase": "grpo",
+    "dataset": "math",
+    "accuracy": 0.296,
+    "pass_at_k": 0.4126,
+    "k": 4,
+    "format_success": 0.7616,
+    "avg_output_length": 105.4774,
+    "correct": 1480,
+    "total": 5000,
+    "reward_type": "format_bonus",
+    "avg_reward": 0.37215999999997496
+  }
+}

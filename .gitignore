@@ -1,0 +1,22 @@
+# env / caches
+.claude/
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# model checkpoints (too big for git)
+checkpoints/
+
+# HF cache
+.cache/
+
+# SGE logs
+qsub_runs/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# pip artifacts
+=*

@@ -1,0 +1,13 @@
+{
+  "phase": "base",
+  "dataset": "math",
+  "accuracy": 0.1484,
+  "pass_at_k": 0.244,
+  "k": 4,
+  "format_success": 0.2106,
+  "avg_output_length": 145.9278,
+  "correct": 742,
+  "total": 5000,
+  "reward_type": "binary",
+  "avg_reward": 0.1484
+}

@@ -1,0 +1,23 @@
+{
+  "base": {
+    "phase": "base",
+    "accuracy": 0.185,
+    "format_adherence": 0.2575,
+    "correct": 74,
+    "total": 400
+  },
+  "sft": {
+    "phase": "sft",
+    "accuracy": 0.415,
+    "format_adherence": 0.975,
+    "correct": 166,
+    "total": 400
+  },
+  "grpo": {
+    "phase": "grpo",
+    "accuracy": 0.46,
+    "format_adherence": 0.97,
+    "correct": 184,
+    "total": 400
+  }
+}
