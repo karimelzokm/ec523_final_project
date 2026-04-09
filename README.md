@@ -8,11 +8,25 @@ Runs on a single NVIDIA L40S (48 GB) using QLoRA (4-bit + LoRA).
 
 ## Files
 
-- `pilot_gsm8k_sft_grpo.py` — main script, everything is in here
-- `run_pilot.sh` / `run.sh` — shell scripts to launch runs
-- `setup_env.sh` — conda env setup
-- `results/` — saved metrics and qualitative examples
-- `checkpoints/` — LoRA adapters (not in repo, too large)
+```
+.
+├── pilot_gsm8k_sft_grpo.py       # main script, all the logic
+├── run.sh                         # SGE array job for full sweep
+├── run_pilot.sh                   # quick local run
+├── setup_env.sh                   # conda env setup
+├── requirements.txt
+├── results/
+│   ├── Qwen2.5-3B-Instruct/
+│   │   ├── gsm8k_binary/         # base/sft/grpo metrics + qualitative
+│   │   ├── gsm8k_format_bonus/
+│   │   ├── gsm8k_length_penalty/
+│   │   ├── math_binary/
+│   │   ├── math_format_bonus/
+│   │   └── math_length_penalty/
+│   ├── Qwen2.5-1.5B-Instruct/
+│   └── Llama-3.2-1B-Instruct/
+└── checkpoints/                   # LoRA adapters (not in repo, too large)
+```
 
 ## Setup
 
@@ -25,20 +39,11 @@ pip install -r requirements.txt
 ## Running
 
 ```bash
-# full pipeline (SFT -> eval -> GRPO -> eval)
-bash run_pilot.sh
-
-# or run steps separately
-python pilot_gsm8k_sft_grpo.py --mode train_sft
-python pilot_gsm8k_sft_grpo.py --mode eval_sft
-python pilot_gsm8k_sft_grpo.py --mode train_grpo
-python pilot_gsm8k_sft_grpo.py --mode eval_grpo
-
-# run everything at once
-python pilot_gsm8k_sft_grpo.py --mode all
+# full pipeline on both datasets (SFT -> eval -> GRPO -> eval)
+python pilot_gsm8k_sft_grpo.py --mode all --dataset both
 ```
 
-You can also change the dataset (`--dataset gsm8k|math|both`), reward type (`--reward_type binary|format_bonus|length_penalty`), model (`--model_name`), etc. Check the argparser in the script for all flags.
+You can also change the reward type (`--reward_type binary|format_bonus|length_penalty`), model (`--model_name`), etc. See the argparser in the script for all flags.
 
 ---
 
