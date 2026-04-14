@@ -508,10 +508,12 @@ def _sft_collate(batch: list, pad_id: int) -> dict:
     }
 
 
-def train_sft(cfg: PilotConfig) -> None:
+def train_sft(cfg: PilotConfig) -> float:
+    """Train SFT. Returns wall-clock seconds elapsed."""
     print("\n" + "═" * 60)
     print("PHASE – SFT Training")
     print("═" * 60)
+    phase_t0 = time.time()
     set_seed(cfg.seed)
 
     train_data, _ = load_data(cfg)
@@ -573,8 +575,10 @@ def train_sft(cfg: PilotConfig) -> None:
     os.makedirs(cfg.sft_ckpt, exist_ok=True)
     model.save_pretrained(cfg.sft_ckpt)
     tok.save_pretrained(cfg.sft_ckpt)
-    print(f"SFT adapter saved → {cfg.sft_ckpt}")
+    elapsed = time.time() - phase_t0
+    print(f"SFT adapter saved → {cfg.sft_ckpt}  ({elapsed:.0f}s)")
     free_gpu(model)
+    return elapsed
 
 
 # --- GRPO dataset + reward (for TRL GRPOTrainer) ---
@@ -754,10 +758,12 @@ def compute_logprobs(
 
 # --- GRPO training ---
 
-def train_grpo(cfg: PilotConfig) -> None:
+def train_grpo(cfg: PilotConfig) -> float:
+    """Train GRPO. Returns wall-clock seconds elapsed."""
     print("\n" + "═" * 60)
     print("PHASE – GRPO Training  (TRL GRPOTrainer)")
     print("═" * 60)
+    phase_t0 = time.time()
     set_seed(cfg.seed)
 
     train_data, _ = load_data(cfg)
@@ -819,8 +825,10 @@ def train_grpo(cfg: PilotConfig) -> None:
     os.makedirs(cfg.grpo_ckpt, exist_ok=True)
     trainer.save_model(cfg.grpo_ckpt)
     tok.save_pretrained(cfg.grpo_ckpt)
-    print(f"GRPO adapter saved → {cfg.grpo_ckpt}")
+    elapsed = time.time() - phase_t0
+    print(f"GRPO adapter saved → {cfg.grpo_ckpt}  ({elapsed:.0f}s)")
     free_gpu(model)
+    return elapsed
 
 
 # --- Evaluation ---
@@ -831,6 +839,7 @@ def run_eval(cfg: PilotConfig, phase: str, ckpt: Optional[str] = None) -> dict:
     print("\n" + "═" * 60)
     print(f"PHASE – Eval {phase.upper()}")
     print("═" * 60)
+    phase_t0 = time.time()
 
     _, eval_data = load_data(cfg)
     set_seed(cfg.seed)
@@ -931,6 +940,8 @@ def run_eval(cfg: PilotConfig, phase: str, ckpt: Optional[str] = None) -> dict:
         pass_at_k_rate = pass_correct / max(total, 1)
         print(f"  [pass@{k}] {pass_at_k_rate:.3f}")
 
+    eval_elapsed = time.time() - phase_t0
+
     # put metrics together
     metrics = {
         "phase":              phase,
@@ -947,6 +958,7 @@ def run_eval(cfg: PilotConfig, phase: str, ckpt: Optional[str] = None) -> dict:
         "total":              total,
         "reward_type":        cfg.reward_type,
         "avg_reward":         avg_reward,
+        "runtime_seconds":    round(eval_elapsed, 1),
     }
 
     save_json(f"{cfg.results_dir}/{phase}_metrics.json", metrics)
@@ -1079,21 +1091,29 @@ def main() -> None:
     print(json.dumps(asdict(cfg), indent=2))
 
     results: dict = {}
+    runtimes: dict = {}
+    total_t0 = time.time()
 
     if cfg.mode in ("eval_base", "all"):
         results["base"] = run_eval(cfg, phase="base", ckpt=None)
+        runtimes["eval_base"] = results["base"]["runtime_seconds"]
 
     if cfg.mode in ("train_sft", "all"):
-        train_sft(cfg)
+        runtimes["train_sft"] = round(train_sft(cfg), 1)
 
     if cfg.mode in ("eval_sft", "all"):
         results["sft"] = run_eval(cfg, phase="sft", ckpt=cfg.sft_ckpt)
+        runtimes["eval_sft"] = results["sft"]["runtime_seconds"]
 
     if cfg.mode in ("train_grpo", "all"):
-        train_grpo(cfg)
+        runtimes["train_grpo"] = round(train_grpo(cfg), 1)
 
     if cfg.mode in ("eval_grpo", "all"):
         results["grpo"] = run_eval(cfg, phase="grpo", ckpt=cfg.grpo_ckpt)
+        runtimes["eval_grpo"] = results["grpo"]["runtime_seconds"]
+
+    runtimes["total"] = round(time.time() - total_t0, 1)
+    save_json(f"{cfg.results_dir}/runtimes.json", runtimes)
 
     if results:
         save_json(f"{cfg.results_dir}/summary.json", results)
@@ -1103,12 +1123,15 @@ def main() -> None:
         k = cfg.pass_at_k
         for phase, m in results.items():
             pak = f"  pass@{k}={m['pass_at_k']:.3f}" if m.get("pass_at_k") is not None else ""
+            rt  = f"  {m['runtime_seconds']}s" if m.get("runtime_seconds") else ""
             print(f"  {phase.upper():8s}  "
                   f"acc={m['accuracy']:.3f}  "
                   f"fmt={m['format_success']:.3f}  "
                   f"len={m['avg_output_length']:.1f}w"
                   f"{pak}  "
-                  f"({m['correct']}/{m['total']})")
+                  f"({m['correct']}/{m['total']})"
+                  f"{rt}")
+        print(f"\n  Runtimes: {json.dumps(runtimes)}")
         print("═" * 60)
 
 
