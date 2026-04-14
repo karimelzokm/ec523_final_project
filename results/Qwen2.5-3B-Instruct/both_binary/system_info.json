@@ -1,0 +1,35 @@
+{
+  "cpu_physical_cores": 32,
+  "cpu_model": "AMD EPYC 9135 16-Core Processor",
+  "ram_gb": 755.0,
+  "gpus": [
+    {
+      "index": 0,
+      "name": "NVIDIA H200 NVL",
+      "vram_gb": 139.8,
+      "sm_count": 132,
+      "cuda_cap": "9.0"
+    }
+  ],
+  "cuda_version": "12.8",
+  "num_gpus": 1,
+  "python_version": "3.11.14",
+  "torch_version": "2.10.0+cu128",
+  "platform": "Linux-4.18.0-553.94.1.el8_10.x86_64-x86_64-with-glibc2.28",
+  "hostname": "scc-a03",
+  "experiment": {
+    "model_name": "Qwen/Qwen2.5-3B-Instruct",
+    "dataset": "both",
+    "mode": "all",
+    "train_size": -1,
+    "eval_size": -1,
+    "grpo_train_size": -1,
+    "reward_type": "binary",
+    "pass_at_k": 4,
+    "sft_max_steps": 400,
+    "grpo_max_steps": 300,
+    "grpo_K": 4,
+    "lora_r": 16,
+    "lora_alpha": 32
+  }
+}

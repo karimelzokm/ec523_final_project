@@ -1,0 +1,41 @@
+{
+  "base": {
+    "phase": "base",
+    "dataset": "both",
+    "accuracy": 0.206836524766577,
+    "pass_at_k": 0.3324893179300522,
+    "k": 4,
+    "format_success": 0.27615128976103814,
+    "avg_output_length": 152.00237379332174,
+    "correct": 1307,
+    "total": 6319,
+    "reward_type": "binary",
+    "avg_reward": 0.206836524766577
+  },
+  "sft": {
+    "phase": "sft",
+    "dataset": "both",
+    "accuracy": 0.3557524924829878,
+    "pass_at_k": 0.49485678113625575,
+    "k": 4,
+    "format_success": 0.8100965342617503,
+    "avg_output_length": 103.47982275676532,
+    "correct": 2248,
+    "total": 6319,
+    "reward_type": "binary",
+    "avg_reward": 0.3557524924829878
+  },
+  "grpo": {
+    "phase": "grpo",
+    "dataset": "both",
+    "accuracy": 0.3676214590916284,
+    "pass_at_k": 0.489001424275993,
+    "k": 4,
+    "format_success": 0.8048741889539484,
+    "avg_output_length": 106.04858363665137,
+    "correct": 2323,
+    "total": 6319,
+    "reward_type": "binary",
+    "avg_reward": 0.3676214590916284
+  }
+}
