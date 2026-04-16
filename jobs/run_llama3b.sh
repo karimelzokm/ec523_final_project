@@ -7,7 +7,7 @@
 #$ -t 1-9
 #$ -pe omp 4
 #$ -l gpus=1
-#$ -l gpu_c=8.0
+#$ -l gpu_type=L40S
 #$ -l h_rt=48:00:00
 #$ -N RLVR_llama3b
 #$ -j y

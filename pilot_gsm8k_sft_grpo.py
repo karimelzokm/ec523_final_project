@@ -70,9 +70,7 @@ class PilotConfig:
     grpo_K: int = 2
     grpo_max_new_tokens: int = 128
     grpo_temperature: float = 0.8
-    grpo_top_p: float = 0.95
     grpo_lr: float = 1e-5
-    grpo_clip_eps: float = 0.2
     grpo_beta_kl: float = 0.05
 
     # reward shaping -- binary (default), format_bonus, or length_penalty
@@ -105,25 +103,14 @@ def build_config() -> PilotConfig:
     p.add_argument("--K",           type=int,   default=None)
     p.add_argument("--sft_steps",   type=int,   default=None)
     p.add_argument("--grpo_steps",  type=int,   default=None)
-    p.add_argument("--train_size",      type=int,   default=None)
-    p.add_argument("--grpo_train_size", type=int,   default=None)
-    p.add_argument("--eval_size",   type=int,   default=None)
     p.add_argument("--seed",        type=int,   default=None)
     p.add_argument("--beta_kl",       type=float, default=None)
-    p.add_argument("--temperature",   type=float, default=None)
     p.add_argument("--batch_prompts", type=int,   default=None)
     p.add_argument("--max_new_tokens", type=int,  default=None)
     p.add_argument("--pass_at_k",      type=int,   default=None,
                    help="k for pass@k eval metric (default 4, set 1 to skip)")
-    p.add_argument("--eval_temperature", type=float, default=None,
-                   help="sampling temperature for pass@k (default 0.8)")
-    # reward shaping
     p.add_argument("--reward_type", default=None,
                    choices=["binary", "format_bonus", "length_penalty"])
-    p.add_argument("--format_bonus_value",    type=float, default=None,
-                   help="beta for format_bonus reward (default 0.1)")
-    p.add_argument("--length_penalty_lambda", type=float, default=None,
-                   help="lambda for length_penalty reward (default 0.001)")
     # output paths (useful when running multiple experiments in parallel)
     p.add_argument("--sft_ckpt",    default=None, help="override SFT checkpoint dir")
     p.add_argument("--grpo_ckpt",   default=None, help="override GRPO checkpoint dir")
@@ -137,25 +124,17 @@ def build_config() -> PilotConfig:
     if args.K:                  cfg.grpo_K              = args.K
     if args.sft_steps:          cfg.sft_max_steps       = args.sft_steps
     if args.grpo_steps:         cfg.grpo_max_steps      = args.grpo_steps
-    if args.train_size:         cfg.train_size          = args.train_size
-    if args.grpo_train_size:    cfg.grpo_train_size     = args.grpo_train_size
-    if args.eval_size:          cfg.eval_size           = args.eval_size
     if args.seed:               cfg.seed                = args.seed
     if args.beta_kl:            cfg.grpo_beta_kl        = args.beta_kl
-    if args.temperature:        cfg.grpo_temperature    = args.temperature
     if args.batch_prompts:      cfg.grpo_batch_prompts  = args.batch_prompts
     if args.max_new_tokens:
         cfg.grpo_max_new_tokens = args.max_new_tokens
         cfg.eval_max_new_tokens = args.max_new_tokens
-    if args.pass_at_k       is not None:  cfg.pass_at_k           = args.pass_at_k
-    if args.eval_temperature is not None: cfg.eval_temperature    = args.eval_temperature
-    # reward shaping (use `is not None` so 0.0 is a valid override)
-    if args.reward_type             is not None:  cfg.reward_type             = args.reward_type
-    if args.format_bonus_value      is not None:  cfg.format_bonus_value      = args.format_bonus_value
-    if args.length_penalty_lambda   is not None:  cfg.length_penalty_lambda   = args.length_penalty_lambda
-    if args.sft_ckpt                is not None:  cfg.sft_ckpt                = args.sft_ckpt
-    if args.grpo_ckpt               is not None:  cfg.grpo_ckpt               = args.grpo_ckpt
-    if args.results_dir             is not None:  cfg.results_dir             = args.results_dir
+    if args.pass_at_k   is not None:  cfg.pass_at_k    = args.pass_at_k
+    if args.reward_type is not None:  cfg.reward_type  = args.reward_type
+    if args.sft_ckpt    is not None:  cfg.sft_ckpt     = args.sft_ckpt
+    if args.grpo_ckpt   is not None:  cfg.grpo_ckpt    = args.grpo_ckpt
+    if args.results_dir is not None:  cfg.results_dir  = args.results_dir
 
     # Auto-nest results under model short name (e.g. results/Qwen2.5-3B-Instruct/...)
     model_short = cfg.model_name.split("/")[-1]
@@ -310,20 +289,6 @@ def _is_correct(output: str, gt_answer: str) -> bool:
     return _normalize_math_str(pred) == _normalize_math_str(gt)
 
 
-# old reward function (kept around just in case)
-
-def compute_reward(output: str, gt_answer: str) -> float:
-    """
-    +1.0  exact match
-     0.0  wrong answer but has expected format marker
-    -0.2  no format marker found
-    """
-    fmt = _format_ok(output, gt_answer)
-    if not fmt:
-        return -0.2
-    return 1.0 if _is_correct(output, gt_answer) else 0.0
-
-
 # dataset loading
 
 def _slice(lst: list, n: int) -> list:
@@ -361,7 +326,7 @@ def load_gsm8k(cfg: PilotConfig) -> Tuple[list, list]:
 
 def load_math(cfg: PilotConfig) -> Tuple[list, list]:
     print("Loading MATH …")
-    ds    = load_dataset("DigitalLearningGmbH/MATH-lighteval", "default")
+    ds = load_dataset("DigitalLearningGmbH/MATH-lighteval", "default")
     train = [_normalize_math_entry(e) for e in ds["train"]]
     test  = [_normalize_math_entry(e) for e in ds["test"]]
     train = _slice(train, cfg.train_size)
@@ -452,16 +417,6 @@ def load_for_inference(cfg: PilotConfig, ckpt: Optional[str] = None):
     if ckpt is not None:
         model = PeftModel.from_pretrained(model, ckpt, is_trainable=False)
     model.eval()
-    return model
-
-
-def load_for_training(cfg: PilotConfig, ckpt: str):
-    """Load base + saved LoRA adapter for continued training."""
-    model = load_base_model(cfg)
-    model = PeftModel.from_pretrained(model, ckpt, is_trainable=True)
-    model.config.use_cache = False
-    model.enable_input_require_grads()
-    model.gradient_checkpointing_enable()
     return model
 
 
@@ -590,11 +545,6 @@ def make_grpo_dataset(data: list) -> HFDataset:
     return HFDataset.from_list(rows)
 
 
-def gsm8k_reward(completions: List[str], answer: List[str], **kwargs) -> List[float]:
-    """Old reward callback -- use make_grpo_reward_fn() for new runs."""
-    return [compute_reward(c, a) for c, a in zip(completions, answer)]
-
-
 # --- Reward shaping (ablation variants) ---
 
 def _reward_components(output: str, gt_answer: str) -> dict:
@@ -676,84 +626,6 @@ def make_grpo_reward_fn(cfg: "PilotConfig"):
         return rewards
 
     return _reward_fn
-
-
-# --- GRPO helpers (kept for reference) ---
-
-@torch.no_grad()
-def sample_completions(
-    model, tok, prompts: List[str], cfg: PilotConfig
-) -> Tuple[List[List[str]], List[List[torch.Tensor]], List[List[torch.Tensor]]]:
-    """Sample K completions per prompt, return texts + token ids + log-probs."""
-    model.eval()
-    enc   = tok(prompts, padding=True, truncation=True,
-                max_length=512, return_tensors="pt").to(device_of(model))
-    p_len = enc["input_ids"].shape[1]
-    B     = len(prompts)
-
-    all_texts = [[] for _ in range(B)]
-    all_ids   = [[] for _ in range(B)]
-    all_lps   = [[] for _ in range(B)]
-
-    for _ in range(cfg.grpo_K):
-        out = model.generate(
-            **enc,
-            max_new_tokens=cfg.grpo_max_new_tokens,
-            do_sample=True,
-            temperature=cfg.grpo_temperature,
-            top_p=cfg.grpo_top_p,
-            pad_token_id=tok.pad_token_id,
-            eos_token_id=tok.eos_token_id,
-            return_dict_in_generate=True,
-            output_scores=True,
-        )
-        gen    = out.sequences[:, p_len:]                          # (B, gen_len)
-        scores = torch.stack(out.scores, dim=1)                    # (B, gen_len, V)
-        lp_all = F.log_softmax(scores, dim=-1)
-        tok_lp = lp_all.gather(-1, gen.unsqueeze(-1)).squeeze(-1)  # (B, gen_len)
-        texts  = tok.batch_decode(gen, skip_special_tokens=True)
-
-        for i in range(B):
-            eos_pos = (gen[i] == tok.eos_token_id).nonzero(as_tuple=True)[0]
-            trim    = eos_pos[0].item() + 1 if len(eos_pos) > 0 else gen.shape[1]
-            all_texts[i].append(texts[i])
-            all_ids[i].append(gen[i, :trim].cpu())
-            all_lps[i].append(tok_lp[i, :trim].cpu())
-
-    return all_texts, all_ids, all_lps
-
-
-def compute_logprobs(
-    model,
-    prompt_ids_batch: List[torch.Tensor],
-    comp_ids_batch:   List[torch.Tensor],
-) -> List[torch.Tensor]:
-    """Per-token log-probs for (prompt, completion) pairs. Gradients flow through."""
-    B   = len(prompt_ids_batch)
-    dev = device_of(model)
-
-    full_seqs, p_lens, c_lens = [], [], []
-    for p, c in zip(prompt_ids_batch, comp_ids_batch):
-        full_seqs.append(torch.cat([p, c]))
-        p_lens.append(len(p))
-        c_lens.append(len(c))
-
-    max_len = max(s.size(0) for s in full_seqs)
-    padded  = torch.zeros(B, max_len, dtype=torch.long, device=dev)
-    mask    = torch.zeros(B, max_len, dtype=torch.long, device=dev)
-    for i, s in enumerate(full_seqs):
-        padded[i, :s.size(0)] = s.to(dev)
-        mask[i,   :s.size(0)] = 1
-
-    lp_all = F.log_softmax(model(input_ids=padded, attention_mask=mask).logits, dim=-1)
-
-    results = []
-    for i in range(B):
-        pl, cl = p_lens[i], c_lens[i]
-        c_ids  = comp_ids_batch[i].to(dev)
-        rel_lp = lp_all[i, pl - 1: pl + cl - 1, :]
-        results.append(rel_lp[torch.arange(cl, device=dev), c_ids])
-    return results
 
 
 # --- GRPO training ---
