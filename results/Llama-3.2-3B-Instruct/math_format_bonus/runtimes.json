@@ -1,0 +1,8 @@
+{
+  "eval_base": 9816.2,
+  "train_sft": 1430.7,
+  "eval_sft": 14583.0,
+  "train_grpo": 5831.2,
+  "eval_grpo": 14151.0,
+  "total": 45815.4
+}

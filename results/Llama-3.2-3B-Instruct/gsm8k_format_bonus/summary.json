@@ -1,0 +1,44 @@
+{
+  "base": {
+    "phase": "base",
+    "dataset": "gsm8k",
+    "accuracy": 0.2350265352539803,
+    "pass_at_k": 0.46019711902956784,
+    "k": 4,
+    "format_success": 0.2812736921910538,
+    "avg_output_length": 122.73009855951479,
+    "correct": 310,
+    "total": 1319,
+    "reward_type": "format_bonus",
+    "avg_reward": 0.26315390447308656,
+    "runtime_seconds": 2354.4
+  },
+  "sft": {
+    "phase": "sft",
+    "dataset": "gsm8k",
+    "accuracy": 0.5868081880212282,
+    "pass_at_k": 0.7975739196360879,
+    "k": 4,
+    "format_success": 0.9871114480667172,
+    "avg_output_length": 49.592115238817286,
+    "correct": 774,
+    "total": 1319,
+    "reward_type": "format_bonus",
+    "avg_reward": 0.6855193328279148,
+    "runtime_seconds": 3140.8
+  },
+  "grpo": {
+    "phase": "grpo",
+    "dataset": "gsm8k",
+    "accuracy": 0.6489764973464746,
+    "pass_at_k": 0.8309325246398787,
+    "k": 4,
+    "format_success": 0.9666413949962093,
+    "avg_output_length": 61.482941622441245,
+    "correct": 856,
+    "total": 1319,
+    "reward_type": "format_bonus",
+    "avg_reward": 0.7456406368461105,
+    "runtime_seconds": 3092.2
+  }
+}

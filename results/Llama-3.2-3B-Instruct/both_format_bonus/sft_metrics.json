@@ -1,0 +1,14 @@
+{
+  "phase": "sft",
+  "dataset": "both",
+  "accuracy": 0.32505143218863747,
+  "pass_at_k": 0.4749169172337395,
+  "k": 4,
+  "format_success": 0.7930052223453078,
+  "avg_output_length": 94.62209210318089,
+  "correct": 2054,
+  "total": 6319,
+  "reward_type": "format_bonus",
+  "avg_reward": 0.40435195442312893,
+  "runtime_seconds": 20740.8
+}

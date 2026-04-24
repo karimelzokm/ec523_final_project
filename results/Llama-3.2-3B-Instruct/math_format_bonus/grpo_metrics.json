@@ -1,0 +1,14 @@
+{
+  "phase": "grpo",
+  "dataset": "math",
+  "accuracy": 0.266,
+  "pass_at_k": 0.4044,
+  "k": 4,
+  "format_success": 0.7368,
+  "avg_output_length": 112.4422,
+  "correct": 1330,
+  "total": 5000,
+  "reward_type": "format_bonus",
+  "avg_reward": 0.33967999999998283,
+  "runtime_seconds": 14151.0
+}

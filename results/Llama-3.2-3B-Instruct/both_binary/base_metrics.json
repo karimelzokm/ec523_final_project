@@ -1,0 +1,14 @@
+{
+  "phase": "base",
+  "dataset": "both",
+  "accuracy": 0.1462256686184523,
+  "pass_at_k": 0.2511473334388353,
+  "k": 4,
+  "format_success": 0.19069473017882577,
+  "avg_output_length": 144.9427124545023,
+  "correct": 924,
+  "total": 6319,
+  "reward_type": "binary",
+  "avg_reward": 0.1462256686184523,
+  "runtime_seconds": 11030.0
+}

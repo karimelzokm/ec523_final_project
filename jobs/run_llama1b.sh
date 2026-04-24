@@ -4,7 +4,7 @@
 # submit with: qsub jobs/run_llama1b.sh
 
 #$ -P vkolagrp
-#$ -t 1-9
+#$ -t 1-3
 #$ -pe omp 4
 #$ -l gpus=1
 #$ -l gpu_type=L40S

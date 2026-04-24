@@ -1,0 +1,14 @@
+{
+  "phase": "base",
+  "dataset": "gsm8k",
+  "accuracy": 0.2350265352539803,
+  "pass_at_k": 0.46019711902956784,
+  "k": 4,
+  "format_success": 0.2812736921910538,
+  "avg_output_length": 122.73009855951479,
+  "correct": 310,
+  "total": 1319,
+  "reward_type": "length_penalty",
+  "avg_reward": 0.1122964366944656,
+  "runtime_seconds": 2614.3
+}
