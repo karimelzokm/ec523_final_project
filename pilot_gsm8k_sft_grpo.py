@@ -253,6 +253,68 @@ def _normalize_math_str(s: str) -> str:
     return s
 
 
+# math-verify is the canonical SymPy-based equivalence checker for MATH-style
+# answers (handles \frac vs \dfrac, ordered tuples, units, etc.). If it isn't
+# installed we fall through to a hand-rolled latex normalizer.
+try:
+    from math_verify import parse as _mv_parse, verify as _mv_verify  # type: ignore
+    HAS_MATH_VERIFY = True
+except Exception:
+    HAS_MATH_VERIFY = False
+
+
+_LATEX_DROP_TOKENS = (
+    r"\!", r"\,", r"\;", r"\:", r"\ ",
+    r"\left", r"\right",
+    r"\displaystyle", r"\,\!",
+)
+
+
+def _frac_to_div(s: str) -> str:
+    """Rewrite \\frac{a}{b} as a/b until none remain."""
+    if s is None:
+        return ""
+    while True:
+        m = re.search(r"\\frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}", s)
+        if not m:
+            break
+        s = s[: m.start()] + f"{m.group(1)}/{m.group(2)}" + s[m.end():]
+    return s
+
+
+def _strip_latex(s: str) -> str:
+    """Aggressive latex normalizer for MATH-style answers."""
+    if s is None:
+        return ""
+    out = s.strip().replace(r"\dfrac", r"\frac").replace(r"\tfrac", r"\frac")
+    out = _frac_to_div(out)
+    for tok in _LATEX_DROP_TOKENS:
+        out = out.replace(tok, "")
+    out = re.sub(r"\\text\s*\{([^}]*)\}", r"\1", out)
+    out = re.sub(r"\\mathrm\s*\{([^}]*)\}", r"\1", out)
+    out = re.sub(r"\\mbox\s*\{([^}]*)\}", r"\1", out)
+    out = out.replace(r"^\circ", "").replace(r"^{\circ}", "").replace("°", "")
+    out = out.replace(r"\%", "").replace("%", "")
+    out = out.replace(r"\$", "").replace("$", "")
+    out = out.replace(r"\cdot", "*").replace(r"\times", "*")
+    out = out.replace("{", "").replace("}", "")
+    out = out.replace("(", "").replace(")", "")
+    out = re.sub(r"\s+", "", out)
+    return out.lower()
+
+
+def _math_verify_equiv(pred: str, gt: str) -> Optional[bool]:
+    """True/False if math-verify parses both, else None."""
+    if not HAS_MATH_VERIFY:
+        return None
+    try:
+        p = _mv_parse(f"${pred}$")
+        g = _mv_parse(f"${gt}$")
+        return bool(_mv_verify(g, p))
+    except Exception:
+        return None
+
+
 def _format_ok(output: str, gt_answer: str) -> bool:
     """Check if the output has an extractable final answer."""
     if "####" in gt_answer:
@@ -286,6 +348,18 @@ def _is_correct(output: str, gt_answer: str) -> bool:
     pf, gf = _to_float(pred), _to_float(gt)
     if pf is not None and gf is not None:
         return abs(pf - gf) < 1e-3
+
+    # MATH-style answers can have wildly different latex spellings of the same
+    # value (\dfrac vs \frac, parens, units, ordered tuples). Try math-verify
+    # first, then a latex normalizer, before falling back to whitespace-strip.
+    if "####" not in gt_answer:
+        mv = _math_verify_equiv(pred, gt)
+        if mv is True:
+            return True
+        a, b = _strip_latex(pred), _strip_latex(gt)
+        if a and a == b:
+            return True
+
     return _normalize_math_str(pred) == _normalize_math_str(gt)
 
 

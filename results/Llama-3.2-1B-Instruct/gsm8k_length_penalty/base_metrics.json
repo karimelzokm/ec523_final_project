@@ -1,13 +1,14 @@
 {
   "phase": "base",
   "dataset": "gsm8k",
-  "accuracy": 0.05079605761940864,
-  "pass_at_k": 0.0758150113722517,
+  "accuracy": 0.05534495830174375,
+  "pass_at_k": 0.0887035633055345,
   "k": 4,
-  "format_success": 0.1281273692191054,
-  "avg_output_length": 151.8521607278241,
-  "correct": 67,
+  "format_success": 0.12130401819560273,
+  "avg_output_length": 151.15693707354055,
+  "correct": 73,
   "total": 1319,
   "reward_type": "length_penalty",
-  "avg_reward": -0.10105610310841547
+  "avg_reward": -0.09581197877179681,
+  "runtime_seconds": 1443.5
 }

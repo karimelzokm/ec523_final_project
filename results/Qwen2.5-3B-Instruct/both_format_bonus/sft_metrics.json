@@ -1,13 +1,14 @@
 {
   "phase": "sft",
   "dataset": "both",
-  "accuracy": 0.3557524924829878,
-  "pass_at_k": 0.49485678113625575,
+  "accuracy": 0.3592340560215224,
+  "pass_at_k": 0.4896344358284539,
   "k": 4,
-  "format_success": 0.8100965342617503,
-  "avg_output_length": 103.47982275676532,
-  "correct": 2248,
+  "format_success": 0.8089887640449438,
+  "avg_output_length": 102.9895553093844,
+  "correct": 2270,
   "total": 6319,
   "reward_type": "format_bonus",
-  "avg_reward": 0.4367621459091209
+  "avg_reward": 0.44013293242597434,
+  "runtime_seconds": 22105.1
 }

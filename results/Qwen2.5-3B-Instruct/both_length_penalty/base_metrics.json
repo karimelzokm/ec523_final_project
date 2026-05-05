@@ -9,5 +9,6 @@
   "correct": 1300,
   "total": 6319,
   "reward_type": "length_penalty",
-  "avg_reward": 0.05351084032283626
+  "avg_reward": 0.05351084032283626,
+  "runtime_seconds": 14297.5
 }

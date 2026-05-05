@@ -1,13 +1,14 @@
 {
   "phase": "grpo",
   "dataset": "both",
-  "accuracy": 0.363506884000633,
-  "pass_at_k": 0.49169172337395156,
+  "accuracy": 0.35844279158094633,
+  "pass_at_k": 0.4888431713878778,
   "k": 4,
-  "format_success": 0.8161101440101282,
-  "avg_output_length": 104.56923563855041,
-  "correct": 2297,
+  "format_success": 0.8124703275834784,
+  "avg_output_length": 108.60642506725748,
+  "correct": 2265,
   "total": 6319,
   "reward_type": "format_bonus",
-  "avg_reward": 0.4451178984016028
+  "avg_reward": 0.4396898243392522,
+  "runtime_seconds": 21924.8
 }

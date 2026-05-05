@@ -1,14 +1,14 @@
 {
   "cpu_physical_cores": 32,
-  "cpu_model": "Intel(R) Xeon(R) 6517P",
-  "ram_gb": 503.1,
+  "cpu_model": "Intel(R) Xeon(R) Gold 6426Y",
+  "ram_gb": 250.9,
   "gpus": [
     {
       "index": 0,
-      "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
-      "vram_gb": 95.0,
-      "sm_count": 188,
-      "cuda_cap": "12.0"
+      "name": "NVIDIA L40S",
+      "vram_gb": 44.4,
+      "sm_count": 142,
+      "cuda_cap": "8.9"
     }
   ],
   "cuda_version": "12.8",
@@ -16,7 +16,7 @@
   "python_version": "3.11.14",
   "torch_version": "2.10.0+cu128",
   "platform": "Linux-4.18.0-553.94.1.el8_10.x86_64-x86_64-with-glibc2.28",
-  "hostname": "scc-702",
+  "hostname": "scc-j11",
   "experiment": {
     "model_name": "meta-llama/Llama-3.2-1B-Instruct",
     "dataset": "gsm8k",

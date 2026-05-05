@@ -1,13 +1,14 @@
 {
   "phase": "grpo",
   "dataset": "both",
-  "accuracy": 0.3676214590916284,
-  "pass_at_k": 0.489001424275993,
+  "accuracy": 0.3639816426649786,
+  "pass_at_k": 0.48536160784934324,
   "k": 4,
-  "format_success": 0.8048741889539484,
-  "avg_output_length": 106.04858363665137,
-  "correct": 2323,
+  "format_success": 0.7987023263174553,
+  "avg_output_length": 106.81389460357651,
+  "correct": 2300,
   "total": 6319,
   "reward_type": "binary",
-  "avg_reward": 0.3676214590916284
+  "avg_reward": 0.3639816426649786,
+  "runtime_seconds": 22730.1
 }

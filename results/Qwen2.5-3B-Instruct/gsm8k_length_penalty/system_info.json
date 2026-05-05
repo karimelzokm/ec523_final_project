@@ -16,7 +16,7 @@
   "python_version": "3.11.14",
   "torch_version": "2.10.0+cu128",
   "platform": "Linux-4.18.0-553.94.1.el8_10.x86_64-x86_64-with-glibc2.28",
-  "hostname": "scc-j11",
+  "hostname": "scc-j12",
   "experiment": {
     "model_name": "Qwen/Qwen2.5-3B-Instruct",
     "dataset": "gsm8k",

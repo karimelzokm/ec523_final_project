@@ -1,13 +1,14 @@
 {
   "phase": "grpo",
   "dataset": "gsm8k",
-  "accuracy": 0.25246398786959817,
-  "pass_at_k": 0.44200151630022744,
+  "accuracy": 0.22289613343442002,
+  "pass_at_k": 0.4275966641394996,
   "k": 4,
-  "format_success": 0.8256254738438211,
-  "avg_output_length": 124.76952236542836,
-  "correct": 333,
+  "format_success": 0.7467778620166793,
+  "avg_output_length": 139.18802122820318,
+  "correct": 294,
   "total": 1319,
   "reward_type": "binary",
-  "avg_reward": 0.25246398786959817
+  "avg_reward": 0.22289613343442002,
+  "runtime_seconds": 2305.4
 }
